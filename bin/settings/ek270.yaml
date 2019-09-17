@@ -1,0 +1,22 @@
+devices:
+  - device:
+    type: EK270
+    serial: 1234567
+    route: server_socket
+    datasource: random
+  - device:
+    type: EK270
+    serial: 5432124
+    route: server_socket
+    datasource: random
+
+routes:
+  - route:
+    type: TcpServer
+    name: server_socket
+    port: 26401
+
+datasources:
+  - datasource:
+    type: Random
+    name: random
