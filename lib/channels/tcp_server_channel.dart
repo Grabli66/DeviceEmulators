@@ -26,8 +26,13 @@ class TcpServerChannel extends TransportChannel {
       print("TcpServer started PORT: ${port}");
       server.listen(
           (client) {
+            print("Client recieved: ${client.address.host}");
             client.listen((data) {
               _controller.add(data);
+            }, onDone: () {
+              _controller.addError(Exception("Connection closed"));
+            }, onError: (Object e) {
+              print("Client error: $e");
             });
           },
           onDone: () {},

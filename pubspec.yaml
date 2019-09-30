@@ -9,7 +9,10 @@ environment:
 dependencies:
   yaml: ^2.1.16
   meta:  ^1.1.7
-#  path: ^1.6.0
+  device_protocols:
+    path: ../DeviceProtocols
+  binary_data:    
+    path: ../BinaryData
 
 dev_dependencies:
   pedantic: ^1.7.0

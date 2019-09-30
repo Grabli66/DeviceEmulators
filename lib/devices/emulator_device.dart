@@ -1,6 +1,7 @@
 import 'package:device_emulators/channels/transport_channel.dart';
 import 'package:device_emulators/datasources/data_source.dart';
-import 'package:device_emulators/devices/ek270_device.dart';
+import 'package:device_emulators/devices/elster/ek270_device.dart';
+import 'package:device_emulators/devices/logica/spt943_device.dart';
 import 'package:device_emulators/settings/device_settings.dart';
 import 'package:meta/meta.dart';
 
@@ -23,6 +24,8 @@ abstract class EmulatorDevice {
     switch (settings.type) {
       case EK270Device.ID:
         return EK270Device.fromSettings(settings);
+      case Spt943Device.ID:
+        return Spt943Device.fromSettings(settings);
     }
 
     return null;

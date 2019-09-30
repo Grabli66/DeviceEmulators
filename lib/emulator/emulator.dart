@@ -32,16 +32,26 @@ class Emulator {
       datasources[datSettings.name] = datasource;
     }
 
+    // Каналы которые нужно открыть
+    var deviceChannels = <TransportChannel>[];
+
     // Создаёт все драйвера устройств с указанными каналами и источниками данных
-    for (var devSettings in _settings.devices) {      
+    for (var devSettings in _settings.devices) {
       final device = EmulatorDevice.fromSettings(devSettings);
+      if (device == null) {
+        print('Device type: ${devSettings.type} not supported');
+        continue;
+      }
+
       final channel = channels[devSettings.route];
       final datasource = datasources[devSettings.datasource];
       device.init(channel, datasource);
+      device.start();
+      deviceChannels.add(channel);
     }
 
     // Запускает каналы
-    for (var channel in channels.values) {
+    for (var channel in deviceChannels) {
       channel.start();
     }
   }

@@ -1,0 +1,17 @@
+devices:
+  - device:
+    type: SPT943
+    serial: 5647382
+    route: server_socket
+    datasource: random  
+
+routes:
+  - route:
+    type: TcpServer
+    name: server_socket
+    port: 26401
+
+datasources:
+  - datasource:
+    type: Random
+    name: random
