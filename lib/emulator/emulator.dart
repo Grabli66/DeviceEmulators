@@ -1,5 +1,5 @@
+import 'package:device_emulators/channels/binary_transport_channel.dart';
 import 'package:device_emulators/channels/tcp_server_channel.dart';
-import 'package:device_emulators/channels/transport_channel.dart';
 import 'package:device_emulators/datasources/data_source.dart';
 import 'package:device_emulators/devices/emulator_device.dart';
 import 'package:device_emulators/settings/emulator_settings.dart';
@@ -17,7 +17,7 @@ class Emulator {
   void start() async {
     print(_settings);
     // Создаёт все каналы
-    final channels = <String, TransportChannel>{};
+    final channels = <String, BinaryTransportChannel>{};
     for (final route in _settings.routes) {
       if (route is TcpServerRouteSettings) {
         final channel = TcpServerChannel(route.name, route.port);
@@ -33,7 +33,7 @@ class Emulator {
     }
 
     // Каналы которые нужно открыть
-    var deviceChannels = <TransportChannel>[];
+    var deviceChannels = <BinaryTransportChannel>[];
 
     // Создаёт все драйвера устройств с указанными каналами и источниками данных
     for (var devSettings in _settings.devices) {
@@ -46,6 +46,7 @@ class Emulator {
       final channel = channels[devSettings.route];
       final datasource = datasources[devSettings.datasource];
       device.init(channel, datasource);
+      // TODO: обработать возможную ошибку работы
       device.start();
       deviceChannels.add(channel);
     }

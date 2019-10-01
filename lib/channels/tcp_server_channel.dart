@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:device_emulators/channels/transport_channel.dart';
+import 'package:device_emulators/channels/binary_transport_channel.dart';
 
 /// Канал серверного сокета
-class TcpServerChannel extends TransportChannel {
+class TcpServerChannel extends BinaryTransportChannel {
   /// Контроллер потока
   final StreamController<Uint8List> _controller = StreamController<Uint8List>();
 
@@ -40,5 +40,11 @@ class TcpServerChannel extends TransportChannel {
             print(e);
           });
     });
+  }
+
+  /// Добавляет байт в выходной поток
+  @override
+  void add(int byte) {
+    
   }
 }
