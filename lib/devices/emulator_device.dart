@@ -1,4 +1,4 @@
-import 'package:device_emulators/channels/binary_transport_channel.dart';
+import 'package:device_emulators/channels/transport_channel.dart';
 import 'package:device_emulators/datasources/data_source.dart';
 import 'package:device_emulators/devices/elster/ek270_device.dart';
 import 'package:device_emulators/devices/logica/spt943_device.dart';
@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 abstract class EmulatorDevice {
   /// Канал передачи пакетов
   @protected
-  BinaryTransportChannel channel;
+  TransportChannel channel;
 
   /// Источник данных
   @protected
@@ -32,7 +32,7 @@ abstract class EmulatorDevice {
   }
 
   /// Инициализирует каналом приёма сообщений и источником данных
-  void init(BinaryTransportChannel channel, DataSource dataSource) {
+  void init(TransportChannel channel, DataSource dataSource) {
     this.channel = channel;
     this.dataSource = dataSource;
   }

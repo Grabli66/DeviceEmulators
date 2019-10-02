@@ -16,8 +16,5 @@ class EK270Device extends EmulatorDevice {
   /// Запускает эмуляцию устройства
   @override
   void start() {
-     channel.onPacket.listen((req) {
-       
-     });
   }
 }
