@@ -2,11 +2,13 @@ devices:
   - device:
     type: EK270
     serial: 1234567
+    network: 1
     route: server_socket
     datasource: random
   - device:
     type: EK270
     serial: 5432124
+    network: 2
     route: server_socket
     datasource: random
 

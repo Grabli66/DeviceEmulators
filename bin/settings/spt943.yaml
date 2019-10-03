@@ -2,6 +2,7 @@ devices:
   - device:
     type: SPT943
     serial: 5647382
+    network: 33
     route: server_socket
     datasource: random  
 

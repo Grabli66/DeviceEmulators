@@ -1,9 +1,12 @@
 import 'package:binary_data/binary_data_lib.dart';
+import 'package:device_emulators/channels/transport_channel.dart';
 import 'package:device_emulators/channels/transport_channel_client.dart';
-import 'package:device_emulators/devices/emulator_device.dart';
+import 'package:device_emulators/drivers/driver_exception.dart';
+import 'package:device_emulators/drivers/emulator_driver.dart';
 import 'package:device_emulators/settings/device_settings.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/extractors/m4_request_extracted_data.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/extractors/m4_request_extractor.dart';
+import 'package:device_protocols/applied_protocols/m4_protocol/requests/m4_parameter_read_request.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/m4_session_request.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/responses/m4_response.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/responses/m4_session_response.dart';
@@ -12,13 +15,28 @@ import 'package:device_protocols/channel_protocols/m4_protocol/m4_frame_extracto
 import 'package:device_protocols/channel_protocols/m4_protocol/m4_long_frame.dart';
 import 'package:device_protocols/channel_protocols/m4_protocol/m4_short_frame.dart';
 
-/// Эмулирует работу тепловычислителя СПТ943 с новым протоколом M4
-class Spt943Device extends EmulatorDevice {
+/// Драйвер
+class SPT943Driver extends EmulatorDriver {
   /// Идентификатор устройства в настройках
   static const ID = "SPT943";
 
+  /// Устройства по сетевому номеру
+  var _devicesByNetwork = Map<String, DeviceSettings>();
+
+  /// Возвращает устройство по сетевому номеру или кидает исключение
+  DeviceSettings _getDeviceByNetwork(int network) {
+    final device = _devicesByNetwork[network.toString()];
+    if (device == null) {
+      throw DriverException("Device not found network: ${network}");
+    } else {
+      print("Found device ${device}");
+    }
+
+    return device;
+  }
+
   /// Отправляет ответ на запрос
-  void sendResponse(TransportChannelClient client, M4Frame requestFrame,
+  void _sendResponse(TransportChannelClient client, M4Frame requestFrame,
       M4Response response) {
     M4Frame frame;
     if (requestFrame is M4LongFrame) {
@@ -35,33 +53,47 @@ class Spt943Device extends EmulatorDevice {
   /// Обрабатывает запрос сессии
   void _processSessionRequest(
       TransportChannelClient client, M4RequestExtractedData extracted) {
+    _getDeviceByNetwork(extracted.frame.networkAddress);
+
     final response = M4SessionResponse(1, 2);
-    sendResponse(client, extracted.frame, response);
+    _sendResponse(client, extracted.frame, response);
+    print("SessionRequest processed");
+  }
+
+  /// Обрабатывает запрос чтения параметров
+  void _processParameterReadRequest(
+      TransportChannelClient client, M4RequestExtractedData extracted) {
+    final request = extracted.request as M4ParameterReadRequest;
+
+    _getDeviceByNetwork(extracted.frame.networkAddress);
+
+    print(request.parameterList);
+    print("ParameterReadRequest processed");
   }
 
   /// Обрабатывает запрос
   void _processRequest(
       TransportChannelClient client, M4RequestExtractedData extracted) async {
+    final functionId = extracted.request.functionId;
     switch (extracted.request.functionId) {
       case M4SessionRequest.FunctionId:
         _processSessionRequest(client, extracted);
         break;
+      case M4ParameterReadRequest.FunctionId:
+        _processParameterReadRequest(client, extracted);
+        break;
       default:
-        print("Unsupported packet");
+        print("Unsupported packet FunctionId: ${functionId}");
     }
   }
 
-  Spt943Device._();
-
-  /// Создаёт из настроек
-  factory Spt943Device.fromSettings(DeviceSettings settings) {
-    print(settings);
-    return Spt943Device._();
-  }
-
-  /// Запускает эмуляцию устройства
+  /// Запускает работу
   @override
-  void start() {
+  void start(TransportChannel channel, List<DeviceSettings> devices) {
+    _devicesByNetwork = Map.fromIterable(devices,
+        key: (Object item) => (item as DeviceSettings).network,
+        value: (Object item) => item as DeviceSettings);
+
     channel.onClient.listen((client) async {
       final channelExtractor =
           M4FrameExtractor(BinaryStreamReader(client.onPacket));
