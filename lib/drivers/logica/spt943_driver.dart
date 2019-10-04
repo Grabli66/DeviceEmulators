@@ -4,10 +4,14 @@ import 'package:device_emulators/channels/transport_channel_client.dart';
 import 'package:device_emulators/drivers/driver_exception.dart';
 import 'package:device_emulators/drivers/emulator_driver.dart';
 import 'package:device_emulators/settings/device_settings.dart';
+import 'package:device_protocols/applied_protocols/m4_protocol/data_tags/m4_data_tag.dart';
+import 'package:device_protocols/applied_protocols/m4_protocol/data_tags/m4_date_tag.dart';
+import 'package:device_protocols/applied_protocols/m4_protocol/data_tags/m4_time_tag.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/extractors/m4_request_extracted_data.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/extractors/m4_request_extractor.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/m4_parameter_read_request.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/requests/m4_session_request.dart';
+import 'package:device_protocols/applied_protocols/m4_protocol/responses/m4_parameter_read_response.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/responses/m4_response.dart';
 import 'package:device_protocols/applied_protocols/m4_protocol/responses/m4_session_response.dart';
 import 'package:device_protocols/channel_protocols/m4_protocol/m4_frame.dart';
@@ -67,7 +71,24 @@ class SPT943Driver extends EmulatorDriver {
 
     _getDeviceByNetwork(extracted.frame.networkAddress);
 
-    print(request.parameterList);
+    final responseTags = List<M4DataTag>();
+
+    for (var parameter in request.parameterList) {
+      switch (parameter.parameter) {
+        // Дата
+        case 0x401:
+          responseTags.add(M4DateTag(DateTime.now()));
+          break;
+        // Время
+        case 0x400:
+          responseTags.add(M4TimeTag(DateTime.now()));
+          break;
+      }
+    }
+
+    _sendResponse(
+        client, extracted.frame, M4ParameterReadResponse(responseTags));
+
     print("ParameterReadRequest processed");
   }
 
