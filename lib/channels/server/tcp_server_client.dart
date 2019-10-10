@@ -1,12 +1,21 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:binary_data/binary_data_lib.dart';
 import 'package:device_emulators/channels/transport_channel_client.dart';
 
 /// Клиент серверного сокета
 class TcpServerClient extends TransportChannelClient {
   /// Сокет клиента
   final Socket socket;
+
+  /// Контроллирует поток бинарных данных
+  final StreamController<Uint8List> controller = StreamController<Uint8List>();
+
+  /// Для чтения из бинарного потока данных
+  @override
+  BinaryStreamReader get streamReader => BinaryStreamReader(controller.stream);
 
   /// Конструктор
   TcpServerClient(this.socket) {
@@ -21,17 +30,19 @@ class TcpServerClient extends TransportChannelClient {
   }
 
   @override
-  void add(int byte) {
+  String toString() {
+    return "${socket.address}";
+  }
+
+  /// Отправляет один байт
+  @override
+  void sendByte(int byte) {
     socket.add([byte]);
   }
 
+  /// Отправляет список байт
   @override
-  void addList(Uint8List data) {
+  void sendList(Uint8List data) {
     socket.add(data);
-  }
-
-  @override
-  String toString() {
-    return "${socket.address}";
   }
 }

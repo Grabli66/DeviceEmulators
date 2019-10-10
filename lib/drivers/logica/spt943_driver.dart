@@ -1,4 +1,3 @@
-import 'package:binary_data/binary_data_lib.dart';
 import 'package:device_emulators/channels/transport_channel.dart';
 import 'package:device_emulators/channels/transport_channel_client.dart';
 import 'package:device_emulators/drivers/driver_exception.dart';
@@ -51,7 +50,7 @@ class SPT943Driver extends EmulatorDriver {
           requestFrame.networkAddress, response.toBytes().getList());
     }
 
-    client.addList(frame.toBytes().getList());
+    client.sendList(frame.toBytes().getList());
   }
 
   /// Обрабатывает запрос сессии
@@ -117,7 +116,7 @@ class SPT943Driver extends EmulatorDriver {
 
     channel.onClient.listen((client) async {
       final channelExtractor =
-          M4FrameExtractor(BinaryStreamReader(client.onPacket));
+          M4FrameExtractor(client.streamReader);
       final requestExtractor = M4RequestExtractor(channelExtractor);
       // Запускает бесконечный цикл, игнорируя все ошибки
       while (true) {
