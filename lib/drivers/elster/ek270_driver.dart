@@ -3,11 +3,15 @@ import 'package:device_emulators/channels/transport_channel_client.dart';
 import 'package:device_emulators/drivers/emulator_driver.dart';
 import 'package:device_emulators/settings/device_settings.dart';
 import 'package:device_protocols/channel_protocols/iec1107_protocol/handlers/iec1107_server_channel_protocol_handler.dart';
+import 'package:device_protocols/channel_protocols/iec1107_protocol/iec1107_speed.dart';
 
 /// Драйвер
 class EK270Driver extends EmulatorDriver {
   /// Идентификатор устройства в настройках
   static const ID = "EK270";
+
+  /// Трёх буквенный код производителя
+  static const Manufacturer = "Els";
 
   /// Фиктивный ключ пароля
   static const PasswordKey = "12345678";
@@ -27,7 +31,7 @@ class EK270Driver extends EmulatorDriver {
     }
 
     // Отправляет пакет идентификации
-    handler.sendIdent("Els", "6", "EK270");
+    handler.sendIdent(Manufacturer, IEC1107SpeedC.Custom6, ID);
     // Читает режим работы
     final mode = await handler.readMode();
     // Отправляет ключ пароля
