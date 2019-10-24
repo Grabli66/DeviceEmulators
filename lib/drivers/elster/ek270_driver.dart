@@ -3,7 +3,9 @@ import 'package:device_emulators/channels/transport_channel_client.dart';
 import 'package:device_emulators/drivers/emulator_driver.dart';
 import 'package:device_emulators/settings/device_settings.dart';
 import 'package:device_protocols/channel_protocols/iec1107_protocol/handlers/iec1107_server_channel_protocol_handler.dart';
+import 'package:device_protocols/channel_protocols/iec1107_protocol/iec1107_command_type.dart';
 import 'package:device_protocols/channel_protocols/iec1107_protocol/iec1107_speed.dart';
+import 'package:device_protocols/channel_protocols/iec1107_protocol/requests/iec1107_program_request.dart';
 
 /// Драйвер
 class EK270Driver extends EmulatorDriver {
@@ -38,15 +40,29 @@ class EK270Driver extends EmulatorDriver {
     handler.sendPasswordKey(PasswordKey);
 
     /// Читает запросы в режиме программирования пока не истечёт таймаут
-    String request;
+    IEC1107ProgramRequest request;
     do {
       request = await handler.readProgrammRequest();
       _processRequest(client, request);
     } while ((request != null));
   }
 
+  /// Обрабатывает команды R1
+  void _processR1Command(String data) {
+    
+  }
+
   /// Обрабатывает запрос
-  void _processRequest(TransportChannelClient client, String request) {}
+  void _processRequest(
+      TransportChannelClient client, IEC1107ProgramRequest request) {
+    switch (request.command) {
+      case IEC1107CommandType.R1:
+        _processR1Command(request.data);
+        break;
+      case IEC1107CommandType.W1:
+        break;
+    }
+  }
 
   /// Запускает исполнение
   @override
