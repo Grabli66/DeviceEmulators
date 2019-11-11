@@ -14,11 +14,15 @@ class TcpServerClient extends TransportChannelClient {
   final StreamController<Uint8List> controller = StreamController<Uint8List>();
 
   /// Для чтения из бинарного потока данных
+  BinaryStreamReader _streamReader;
+  
   @override
-  BinaryStreamReader get streamReader => BinaryStreamReader(controller.stream);
+  BinaryStreamReader get streamReader => _streamReader;
 
   /// Конструктор
   TcpServerClient(this.socket) {
+    _streamReader = BinaryStreamReader(controller.stream);
+
     // Начинает слушать данные сокета
     socket.listen((data) {
       controller.add(data);

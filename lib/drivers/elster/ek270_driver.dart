@@ -27,7 +27,14 @@ class EK270Driver extends EmulatorDriver {
     // Читает пакет начала сессии
     final network = await handler.readStartSession();
 
-    final device = _devicesByNetwork[network];
+    DeviceSettings device;
+
+    if (network.isEmpty) {
+      device = _devicesByNetwork.values.first;
+    } else {
+      device = _devicesByNetwork[network];
+    }
+
     if (device == null) {
       return;
     }
@@ -43,21 +50,20 @@ class EK270Driver extends EmulatorDriver {
     IEC1107ProgramRequest request;
     do {
       request = await handler.readProgrammRequest();
-      _processRequest(client, request);
+      _processRequest(handler, request);
     } while ((request != null));
   }
 
   /// Обрабатывает команды R1
-  void _processR1Command(String data) {
-    
-  }
+  void _processR1Command(
+      IEC1107ServerChannelProtocolHandler handler, String data) {}
 
   /// Обрабатывает запрос
-  void _processRequest(
-      TransportChannelClient client, IEC1107ProgramRequest request) {
+  void _processRequest(IEC1107ServerChannelProtocolHandler handler,
+      IEC1107ProgramRequest request) {
     switch (request.command) {
       case IEC1107CommandType.R1:
-        _processR1Command(request.data);
+        _processR1Command(handler, request.data);
         break;
       case IEC1107CommandType.W1:
         break;

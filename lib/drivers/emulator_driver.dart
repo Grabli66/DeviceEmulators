@@ -1,4 +1,5 @@
 import 'package:device_emulators/channels/transport_channel.dart';
+import 'package:device_emulators/drivers/elster/ek270_driver.dart';
 import 'package:device_emulators/drivers/logica/spt943_driver.dart';
 import 'package:device_emulators/settings/device_settings.dart';
 
@@ -12,6 +13,8 @@ abstract class EmulatorDriver {
     switch (deviceType) {
       case SPT943Driver.ID:
         return SPT943Driver();
+      case EK270Driver.ID:
+        return EK270Driver();
     }
 
     return null;
