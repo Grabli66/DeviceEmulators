@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:typed_data';
 
 import 'package:binary_data/binary_data.dart';
 import 'package:device_emulators/channels/transport_channel_client.dart';

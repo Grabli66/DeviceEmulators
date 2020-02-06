@@ -1,4 +1,6 @@
-A sample command-line application.
+# Эмулятор измерительных устройств
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+# Запуск
+
+cd bin
+dart (название эмулятора).dart
